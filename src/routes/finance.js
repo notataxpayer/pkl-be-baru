@@ -232,7 +232,6 @@ export default router;
  *                     start: { type: string, nullable: true }
  *                     end:   { type: string, nullable: true }
  *                 total_pemasukan:  { type: integer, example: 5000000 }
- *                 total_pengeluaran:{ type: integer, example: 3200000 }
  *                 laba_rugi:        { type: integer, example: 1800000 }
  *       401: { description: Unauthorized }
  */
@@ -285,7 +284,6 @@ export default router;
  *                     page:       { type: integer, example: 1 }
  *                     limit:      { type: integer, example: 10 }
  *                     total_rows: { type: integer, example: 12 }
- *                     total_nilai:{ type: integer, example: 750000 }
  *                 data:
  *                   type: array
  *                   items: { $ref: '#/components/schemas/LaporanKeuangan' }
