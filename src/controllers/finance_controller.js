@@ -22,15 +22,6 @@ import { buildNeracaNested } from '../config/neraca_builder.js';
 function isAdmin(role) { return role === 'admin' || role === 'superadmin'; }
 function normalizeJenis(value) { return String(value || '').trim().toLowerCase(); }
 
-/**
- * POST /api/keuangan/laporan
- * - jenis 'pemasukan' => debit > 0, kredit = 0
- * - jenis 'pengeluaran' => kredit > 0, debit = 0
- * - tidak ada kategori_id
- * - items: [{ produk_id, jumlah, harga_satuan? | subtotal? }]
- *   * total items harus sama dg debit/kredit sesuai jenis
- * - akun_id opsional; jika ada => saldo_akhir += (debit - kredit)
- */
 export async function createLaporan(req, res) {
   try {
     const { jenis, deskripsi, debit, kredit, items, akun_id, tanggal, share_to_klaster, klaster_id } = req.body || {};

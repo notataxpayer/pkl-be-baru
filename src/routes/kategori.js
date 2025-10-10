@@ -2,12 +2,14 @@
 import express from 'express';
 import { authRequired, roleGuard } from '../middlewares/auth.js';
 import { create, list, remove, listByScope } from '../controllers/kategori_controller.js';
+import { getKategoriAutoRules } from '../controllers/kategori_rules_controller.js'
 
 const router = express.Router();
 
 router.get('/', authRequired, list);
 router.post('/', authRequired, create);
 router.delete('/:id', authRequired, roleGuard('admin', 'superadmin'), remove);
+router.get('/rules', getKategoriAutoRules)
 router.get('/scope', authRequired, listByScope);
 
 // ----- Swagger -----
@@ -130,4 +132,62 @@ router.get('/scope', authRequired, listByScope);
  *               properties:
  *                 message: { type: string, example: "Kategori dipakai di laporan keuangan—tidak bisa dihapus" }
  */
+
+/**
+ * @openapi
+ * /rules:
+ *   get:
+ *     summary: Ambil daftar aturan kategori otomatis
+ *     description: |
+ *       Mengambil semua data `pattern` dan `target_sub_kelompok` dari tabel **kategori_auto_rules**.  
+ *       - Hasil sudah diformat:  
+ *         - Tanda `%` dihapus dari `pattern`.  
+ *         - `target_sub_kelompok` diubah menjadi:  
+ *           - **"pemasukkan"** jika mengandung kata "aset".  
+ *           - **"pengeluaran"** jika mengandung kata "kewajiban".  
+ *           - Dibiarkan apa adanya jika bukan keduanya (misalnya "modal").
+ *     tags: [Kategori Auto Rules]
+ *     responses:
+ *       200:
+ *         description: Data kategori_auto_rules berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Data kategori_auto_rules berhasil diambil"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       pattern:
+ *                         type: string
+ *                         example: "hasil"
+ *                       target_sub_kelompok:
+ *                         type: string
+ *                         example: "pemasukkan"
+ *       500:
+ *         description: Gagal mengambil data kategori_auto_rules
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Gagal mengambil data kategori_auto_rules"
+ *                 error:
+ *                   type: string
+ *                   example: "Database connection error"
+ */
+
 export default router;
