@@ -1,6 +1,7 @@
 // src/controllers/kategori.controller.js
 import supabase from '../config/supabase.js';
 import {
+  createKategoriAuto,
   createKategoriAutoSmart,
   listKategoriVisible,
   getKategoriById,
@@ -40,6 +41,7 @@ export async function create(req, res) {
   if (errors.length) return res.status(400).json({ message: 'Validasi gagal', errors });
 
   const nama = String(req.body.nama).trim();
+  const jenis = String(req.body.jenis).trim().toLowerCase();
   // jenis masih divalidasi input, tapi penentuan final jenis/sub_kelompok dilakukan oleh rules DB
   const owner_user_id = req.user.user_id;
   const owner_klaster_id = await getUserKlasterId(owner_user_id); // bisa null
@@ -47,17 +49,34 @@ export async function create(req, res) {
 
   const klaster = share ? owner_klaster_id : null
  
-  const { data, error } = await createKategoriAutoSmart({
+  const smartResult = await createKategoriAutoSmart({
     nama,
     produk_nama: nama, // bisa pakai nama produk/kategori sebagai konteks inference
     owner_user_id,
     owner_klaster_id: klaster,
   });
 
-  if (error) {
-    return res.status(500).json({ message: 'Gagal membuat kategori', detail: error.message });
+  if (smartResult.error) {
+    const fallbackToManual = String(smartResult.error?.message || '').includes('Tidak ada rule kategori yang cocok');
+    if (!fallbackToManual) {
+      return res.status(500).json({ message: 'Gagal membuat kategori', detail: smartResult.error.message });
+    }
+
+    const manualResult = await createKategoriAuto({
+      nama,
+      jenis,
+      owner_user_id,
+      owner_klaster_id: klaster,
+    });
+
+    if (manualResult.error) {
+      return res.status(500).json({ message: 'Gagal membuat kategori', detail: manualResult.error.message });
+    }
+
+    return res.status(201).json({ message: 'Kategori dibuat', data: manualResult.data });
   }
-  return res.status(201).json({ message: 'Kategori dibuat', data });
+
+  return res.status(201).json({ message: 'Kategori dibuat', data: smartResult.data });
 }
 
 // GET /api/kategori

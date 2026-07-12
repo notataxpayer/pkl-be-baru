@@ -4,6 +4,7 @@ import { jest } from '@jest/globals';
 // --- Mock model layer (ESM-safe) ---
 await jest.unstable_mockModule('../models/kategori_model.js', () => ({
   __esModule: true,
+  createKategoriAuto:     jest.fn().mockResolvedValue({ data: { kategori_id: 1 }, error: null }),
   createKategoriAutoSmart: jest.fn().mockResolvedValue({ data: { kategori_id: 1 }, error: null }),
   listKategoriVisible:     jest.fn().mockResolvedValue({ data: [{ kategori_id: 1, nama: 'Contoh' }], error: null, count: 1 }),
   getKategoriById:         jest.fn().mockResolvedValue({ data: { kategori_id: 9, user_id: 'U-1' }, error: null }),
