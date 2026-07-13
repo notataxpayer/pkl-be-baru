@@ -8,7 +8,7 @@ import {swaggerSpec} from './config/swagger.js';
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['http://localhost:5173','https://laporan-keuangan-tani-fe-production.up.railway.app/'];
 
 app.use(
 	cors({
