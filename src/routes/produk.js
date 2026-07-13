@@ -25,7 +25,9 @@ router.post('/', authRequired, create);
 router.post('/bootstrap', authRequired, bootstrapDefaultsForMe);
 
 // Update produk
+// FE lama masih kirim PUT, jadi kita dukung dua-duanya.
 router.patch('/:id', authRequired, update);
+router.put('/:id', authRequired, update);
 
 // Hapus produk
 router.delete('/:id', authRequired, remove);
